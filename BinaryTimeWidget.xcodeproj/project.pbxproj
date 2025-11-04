@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		490C44572EBA031600B75024 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 490C44562EBA031600B75024 /* WidgetKit.framework */; };
+		490C44592EBA031700B75024 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 490C44582EBA031700B75024 /* SwiftUI.framework */; };
+		490C44682EBA031900B75024 /* TimeWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 490C44542EBA031600B75024 /* TimeWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		490C44342EBA02EE00B75024 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -21,13 +27,47 @@
 			remoteGlobalIDString = 490C44252EBA02EB00B75024;
 			remoteInfo = BinaryTimeWidget;
 		};
+		490C44662EBA031900B75024 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 490C441E2EBA02EB00B75024 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 490C44532EBA031600B75024;
+			remoteInfo = TimeWidgetExtension;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		490C446D2EBA031900B75024 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				490C44682EBA031900B75024 /* TimeWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		490C44262EBA02EB00B75024 /* BinaryTimeWidget.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BinaryTimeWidget.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		490C44332EBA02EE00B75024 /* BinaryTimeWidgetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BinaryTimeWidgetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		490C443D2EBA02EE00B75024 /* BinaryTimeWidgetUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BinaryTimeWidgetUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		490C44542EBA031600B75024 /* TimeWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TimeWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		490C44562EBA031600B75024 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		490C44582EBA031700B75024 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		490C44692EBA031900B75024 /* Exceptions for "TimeWidget" folder in "TimeWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 490C44532EBA031600B75024 /* TimeWidgetExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		490C44282EBA02EB00B75024 /* BinaryTimeWidget */ = {
@@ -43,6 +83,14 @@
 		490C44402EBA02EE00B75024 /* BinaryTimeWidgetUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = BinaryTimeWidgetUITests;
+			sourceTree = "<group>";
+		};
+		490C445A2EBA031700B75024 /* TimeWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				490C44692EBA031900B75024 /* Exceptions for "TimeWidget" folder in "TimeWidgetExtension" target */,
+			);
+			path = TimeWidget;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -69,6 +117,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		490C44512EBA031600B75024 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				490C44592EBA031700B75024 /* SwiftUI.framework in Frameworks */,
+				490C44572EBA031600B75024 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -78,6 +135,8 @@
 				490C44282EBA02EB00B75024 /* BinaryTimeWidget */,
 				490C44362EBA02EE00B75024 /* BinaryTimeWidgetTests */,
 				490C44402EBA02EE00B75024 /* BinaryTimeWidgetUITests */,
+				490C445A2EBA031700B75024 /* TimeWidget */,
+				490C44552EBA031600B75024 /* Frameworks */,
 				490C44272EBA02EB00B75024 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -88,8 +147,18 @@
 				490C44262EBA02EB00B75024 /* BinaryTimeWidget.app */,
 				490C44332EBA02EE00B75024 /* BinaryTimeWidgetTests.xctest */,
 				490C443D2EBA02EE00B75024 /* BinaryTimeWidgetUITests.xctest */,
+				490C44542EBA031600B75024 /* TimeWidgetExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		490C44552EBA031600B75024 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				490C44562EBA031600B75024 /* WidgetKit.framework */,
+				490C44582EBA031700B75024 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -102,10 +171,12 @@
 				490C44222EBA02EB00B75024 /* Sources */,
 				490C44232EBA02EB00B75024 /* Frameworks */,
 				490C44242EBA02EB00B75024 /* Resources */,
+				490C446D2EBA031900B75024 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				490C44672EBA031900B75024 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				490C44282EBA02EB00B75024 /* BinaryTimeWidget */,
@@ -163,6 +234,28 @@
 			productReference = 490C443D2EBA02EE00B75024 /* BinaryTimeWidgetUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		490C44532EBA031600B75024 /* TimeWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 490C446A2EBA031900B75024 /* Build configuration list for PBXNativeTarget "TimeWidgetExtension" */;
+			buildPhases = (
+				490C44502EBA031600B75024 /* Sources */,
+				490C44512EBA031600B75024 /* Frameworks */,
+				490C44522EBA031600B75024 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				490C445A2EBA031700B75024 /* TimeWidget */,
+			);
+			name = TimeWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = TimeWidgetExtension;
+			productReference = 490C44542EBA031600B75024 /* TimeWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -184,6 +277,9 @@
 						CreatedOnToolsVersion = 26.0.1;
 						TestTargetID = 490C44252EBA02EB00B75024;
 					};
+					490C44532EBA031600B75024 = {
+						CreatedOnToolsVersion = 26.0.1;
+					};
 				};
 			};
 			buildConfigurationList = 490C44212EBA02EB00B75024 /* Build configuration list for PBXProject "BinaryTimeWidget" */;
@@ -203,6 +299,7 @@
 				490C44252EBA02EB00B75024 /* BinaryTimeWidget */,
 				490C44322EBA02EE00B75024 /* BinaryTimeWidgetTests */,
 				490C443C2EBA02EE00B75024 /* BinaryTimeWidgetUITests */,
+				490C44532EBA031600B75024 /* TimeWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -223,6 +320,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		490C443B2EBA02EE00B75024 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		490C44522EBA031600B75024 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -253,6 +357,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		490C44502EBA031600B75024 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -265,6 +376,11 @@
 			isa = PBXTargetDependency;
 			target = 490C44252EBA02EB00B75024 /* BinaryTimeWidget */;
 			targetProxy = 490C443E2EBA02EE00B75024 /* PBXContainerItemProxy */;
+		};
+		490C44672EBA031900B75024 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 490C44532EBA031600B75024 /* TimeWidgetExtension */;
+			targetProxy = 490C44662EBA031900B75024 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -405,6 +521,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -437,6 +554,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -538,6 +656,68 @@
 			};
 			name = Release;
 		};
+		490C446B2EBA031900B75024 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LS3DY25KKN;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TimeWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TimeWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Me.BinaryTimeWidget.TimeWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		490C446C2EBA031900B75024 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LS3DY25KKN;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TimeWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TimeWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Me.BinaryTimeWidget.TimeWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -573,6 +753,15 @@
 			buildConfigurations = (
 				490C444E2EBA02EE00B75024 /* Debug */,
 				490C444F2EBA02EE00B75024 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		490C446A2EBA031900B75024 /* Build configuration list for PBXNativeTarget "TimeWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				490C446B2EBA031900B75024 /* Debug */,
+				490C446C2EBA031900B75024 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
