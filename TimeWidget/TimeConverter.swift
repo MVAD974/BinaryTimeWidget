@@ -1,3 +1,10 @@
+//
+//  TimeConverter.swift
+//  TimeWidget
+//
+//  Created by Marc Vadier on 04/11/2025.
+//
+
 import Foundation
 
 // This struct holds all the logic for converting time into binary plots.

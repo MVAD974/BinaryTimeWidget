@@ -1,3 +1,10 @@
+//
+//  TimeWidget.swift
+//  TimeWidget
+//
+//  Created by Marc Vadier on 04/11/2025.
+//
+
 import WidgetKit
 import SwiftUI
 
@@ -26,70 +33,87 @@ struct Provider: TimelineProvider {
     /// Provides the timeline (past, present, future) for the widget.
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
         
-        // --- This is the most important part for a clock ---
         let currentDate = Date()
         
-        // 1. Calculate the start of the next minute
         guard let nextUpdateDate = Calendar.current.date(
             byAdding: .minute,
             value: 1,
             to: currentDate
         ) else {
-            return // Should not fail
+            return
         }
         
-        // 2. Get the binary data for the *current* time
         let layers = TimeConverter.getTimeAsBinaryLayers(from: currentDate)
-        
-        // 3. Create a single timeline entry for *now*
         let entry = SimpleEntry(date: currentDate, binaryLayers: layers)
         
-        // 4. Create the timeline.
-        // The `policy: .after(nextUpdateDate)` tells WidgetKit
-        // "Show this entry, and then ask me for a new one *after* the next minute begins."
         let timeline = Timeline(entries: [entry], policy: .after(nextUpdateDate))
         completion(timeline)
     }
 }
 
 // --- 2. The Data Model (Timeline Entry) ---
-// This struct holds the data for a single widget refresh.
 struct SimpleEntry: TimelineEntry {
     let date: Date
     let binaryLayers: [[Int]] // Our 4x4 array of binary data
+    
+    /// **NEW: Accessibility helper**
+    /// Provides a human-readable string for VoiceOver.
+    var accessibilityTimeString: String {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short // e.g., "10:45 AM"
+        
+        // This format is clearer for VoiceOver
+        let components = Calendar.current.dateComponents([.hour, .minute], from: date)
+        let hour = components.hour ?? 0
+        let minute = components.minute ?? 0
+        
+        // Reads as "Time, 10 45"
+        return "Time, \(hour) \(String(format: "%02d", minute))"
+    }
 }
 
 // --- 3. The Widget's View ---
-// This is the SwiftUI view that actually renders the widget.
 struct TimeWidgetEntryView : View {
     var entry: Provider.Entry
     
-    // Define some colors, similar to your 'coolwarm' colormap
-    private let colors: [Color] = [.blue, .cyan, .yellow, .orange]
+    /// **NEW: The single source of truth for styling.**
+    let style = WidgetStyle.default
 
     var body: some View {
         // A VStack (Vertical Stack) to stack the 4 lines
-        VStack(spacing: 5) {
+        VStack(spacing: style.verticalSpacing) { // <-- MODIFIED
             
             // Loop over the 4 layers of data
             ForEach(0..<entry.binaryLayers.count, id: \.self) { index in
                 let digits = entry.binaryLayers[index]
-                let color = colors[index % colors.count]
+                let color = style.lineColors[index % style.lineColors.count] // <-- MODIFIED
                 
                 // Draw the line shape
-                BinaryLineShape(digits: digits)
+                BinaryLineShape(
+                    digits: digits,
+                    amplitudePercent: style.lineAmplitudePercent // <-- MODIFIED
+                )
                     // We must "stroke" the path to make the line visible
-                    .stroke(color, lineWidth: 3.0) // Use 3pt line width
+                    .stroke(color, lineWidth: style.lineWidth) // <-- MODIFIED
                     .overlay(
                         // Add the small circles ("markers")
-                        BinaryMarkerShape(digits: digits)
+                        BinaryMarkerShape(
+                            digits: digits,
+                            markerSize: style.markerSize, // <-- MODIFIED
+                            amplitudePercent: style.lineAmplitudePercent // <-- MODIFIED
+                        )
                             .fill(color)
                     )
             }
         }
-        .padding(12) // Add some padding around the whole widget
-        // This is the modern way to set a widget background
-        .containerBackground(.black, for: .widget)
+        .padding(style.widgetPadding) // <-- MODIFIED
+        .containerBackground(style.backgroundColor, for: .widget) // <-- MODIFIED
+        
+        // --- **NEW: Accessibility** ---
+        // This treats the whole widget as one element
+        // and gives it a useful VoiceOver label.
+        .accessibilityElement()
+        .accessibilityLabel(entry.accessibilityTimeString)
     }
 }
 
@@ -103,48 +127,15 @@ struct TimeWidget: Widget {
         }
         .configurationDisplayName("Binary Time")
         .description("Displays the time as a layered binary plot.")
-        // We can support multiple sizes, but let's start with medium.
-        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])    }
-}
-
-// --- 5. (Bonus) A Shape for the Markers ---
-// This is a separate shape to draw just the 'o' markers from your script.
-struct BinaryMarkerShape: Shape {
-    let digits: [Int]
-    let markerSize: CGFloat = 5.0 // Size of the circle
-
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        guard digits.count == 4 else { return path }
-        
-        let xStep = rect.width / 3.0
-        let yAmplitude = rect.height * 1.0
-        let yOffset = rect.height * 0.0
-        
-        func point(at index: Int) -> CGPoint {
-            let x = CGFloat(index) * xStep
-            let y = yOffset + (1.0 - CGFloat(digits[index])) * yAmplitude
-            return CGPoint(x: x, y: y)
-        }
-
-        // Add a circle at each of the 4 points
-        for i in 0..<4 {
-            let center = point(at: i)
-            let markerRect = CGRect(
-                x: center.x - markerSize / 2,
-                y: center.y - markerSize / 2,
-                width: markerSize,
-                height: markerSize
-            )
-            path.addEllipse(in: markerRect)
-        }
-        
-        return path
+        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
     }
 }
 
+// --- 5. (Bonus) A Shape for the Markers ---
+// **DELETED**: This struct has been moved to its own file: `BinaryMarkerShape.swift`
+
+
 // --- 6. (Bonus) A Preview ---
-// This helps you see your widget in Xcode's preview canvas
 struct TimeWidget_Previews: PreviewProvider {
     static var previews: some View {
         let layers = [
