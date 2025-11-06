@@ -57,6 +57,7 @@
 		490C44542EBA031600B75024 /* TimeWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TimeWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		490C44562EBA031600B75024 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		490C44582EBA031700B75024 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		490C447D2EBA15DD00B75024 /* TimeWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TimeWidgetExtension.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -67,11 +68,32 @@
 			);
 			target = 490C44532EBA031600B75024 /* TimeWidgetExtension */;
 		};
+		490C447B2EBA145200B75024 /* Exceptions for "TimeWidget" folder in "BinaryTimeWidget" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				BinaryLineShape.swift,
+				BinaryMarkerShape.swift,
+				BinaryTimeWidgetStyle.swift,
+				TimeConverter.swift,
+				TimeWidget.swift,
+			);
+			target = 490C44252EBA02EB00B75024 /* BinaryTimeWidget */;
+		};
+		490C44812EBA163B00B75024 /* Exceptions for "BinaryTimeWidget" folder in "TimeWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				StyleManager.swift,
+			);
+			target = 490C44532EBA031600B75024 /* TimeWidgetExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		490C44282EBA02EB00B75024 /* BinaryTimeWidget */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				490C44812EBA163B00B75024 /* Exceptions for "BinaryTimeWidget" folder in "TimeWidgetExtension" target */,
+			);
 			path = BinaryTimeWidget;
 			sourceTree = "<group>";
 		};
@@ -88,6 +110,7 @@
 		490C445A2EBA031700B75024 /* TimeWidget */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
+				490C447B2EBA145200B75024 /* Exceptions for "TimeWidget" folder in "BinaryTimeWidget" target */,
 				490C44692EBA031900B75024 /* Exceptions for "TimeWidget" folder in "TimeWidgetExtension" target */,
 			);
 			path = TimeWidget;
@@ -132,6 +155,7 @@
 		490C441D2EBA02EB00B75024 = {
 			isa = PBXGroup;
 			children = (
+				490C447D2EBA15DD00B75024 /* TimeWidgetExtension.entitlements */,
 				490C44282EBA02EB00B75024 /* BinaryTimeWidget */,
 				490C44362EBA02EE00B75024 /* BinaryTimeWidgetTests */,
 				490C44402EBA02EE00B75024 /* BinaryTimeWidgetUITests */,
@@ -511,6 +535,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = BinaryTimeWidget/BinaryTimeWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = LS3DY25KKN;
@@ -544,6 +569,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = BinaryTimeWidget/BinaryTimeWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = LS3DY25KKN;
@@ -661,6 +687,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = TimeWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = LS3DY25KKN;
@@ -692,6 +719,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = TimeWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = LS3DY25KKN;

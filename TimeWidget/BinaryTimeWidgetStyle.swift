@@ -6,49 +6,84 @@
 //
 
 import SwiftUI
+import UIKit
 
 /// A central struct to define the look and feel of the binary time widget.
-/// To customize your widget, change the values in the `.default` instance.
-struct WidgetStyle {
+/// Conforms to Codable so it can be saved in UserDefaults.
+struct WidgetStyle: Codable, Equatable {
     
-    // MARK: - Colors
+    // MARK: - Properties
     
-    /// The background color of the widget.
-    var backgroundColor: Color
-    
-    /// The array of colors for the four lines (H1, H2, M1, M2).
-    var lineColors: [Color]
-    
-    // MARK: - Dimensions
-    
-    /// The thickness of the binary lines.
+    var backgroundColor: CodableColor
+    var lineColors: [CodableColor]
     var lineWidth: CGFloat
-    
-    /// The diameter of the circles at each point.
     var markerSize: CGFloat
-    
-    /// The vertical "bump" of the line, as a percentage (0.0 to 1.0) of the row's height.
-    /// 1.0 = full height, 0.8 = 80% height.
     var lineAmplitudePercent: CGFloat
-    
-    /// The vertical space between each of the four lines.
     var verticalSpacing: CGFloat
-    
-    /// The padding around the entire group of lines.
     var widgetPadding: CGFloat
-    
     
     // MARK: - Default Style
     
-    /// The default style used by the widget.
-    /// **Change these values to customize your widget!**
     static let `default` = WidgetStyle(
-        backgroundColor: .black,
-        lineColors: [.blue, .cyan, .yellow, .orange],
+        backgroundColor: CodableColor(color: .black),
+        lineColors: [
+            CodableColor(color: .blue),
+            CodableColor(color: .cyan),
+            CodableColor(color: .yellow),
+            CodableColor(color: .orange)
+        ],
         lineWidth: 3.0,
         markerSize: 5.0,
-        lineAmplitudePercent: 2.0, // 100% (as you requested)
-        verticalSpacing: 16.0,
+        lineAmplitudePercent: 1.0,
+        verticalSpacing: 5.0,
         widgetPadding: 12.0
     )
+}
+
+/// A Codable wrapper for SwiftUI's `Color`.
+/// This stores the color's RGBA components to allow saving.
+struct CodableColor: Codable, Equatable {
+    var red: Double
+    var green: Double
+    var blue: Double
+    var opacity: Double
+    
+    // Helper function to get components from a SwiftUI Color
+    private static func getComponents(from color: Color) -> (red: Double, green: Double, blue: Double, opacity: Double) {
+        let uiColor = UIColor(color)
+        var r: CGFloat = 0
+        var g: CGFloat = 0
+        var b: CGFloat = 0
+        var a: CGFloat = 0
+        
+        uiColor.getRed(&r, green: &g, blue: &b, alpha: &a)
+        
+        return (Double(r), Double(g), Double(b), Double(a))
+    }
+
+    // Convert from SwiftUI.Color to CodableColor
+    init(color: Color) {
+        let components = Self.getComponents(from: color)
+        self.red = components.red
+        self.green = components.green
+        self.blue = components.blue
+        self.opacity = components.opacity
+    }
+    
+    // Convert from CodableColor back to SwiftUI.Color
+    // This is now a get/set property, fixing the "get-only" error
+    var color: Color {
+        get {
+            Color(red: red, green: green, blue: blue, opacity: opacity)
+        }
+        set {
+            // When the ColorPicker sets this color,
+            // update our stored RGBA properties
+            let components = Self.getComponents(from: newValue)
+            self.red = components.red
+            self.green = components.green
+            self.blue = components.blue
+            self.opacity = components.opacity
+        }
+    }
 }

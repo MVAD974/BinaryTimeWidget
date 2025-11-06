@@ -9,32 +9,34 @@ import WidgetKit
 import SwiftUI
 
 // --- 1. The Timeline Provider ---
-// This object provides the data (the "Timeline") for the widget.
 struct Provider: TimelineProvider {
     
-    /// Provides a sample entry for the widget gallery (e.g., 10:08)
+    // **NEW: Load the style once**
+    private func getStyle() -> WidgetStyle {
+        return StyleManager.loadStyle()
+    }
+    
     func placeholder(in context: Context) -> SimpleEntry {
         let layers = [
-            TimeConverter.digitToBinary(1), // 1
-            TimeConverter.digitToBinary(0), // 0
-            TimeConverter.digitToBinary(0), // 0
-            TimeConverter.digitToBinary(8)  // 8
+            TimeConverter.digitToBinary(1),
+            TimeConverter.digitToBinary(0),
+            TimeConverter.digitToBinary(0),
+            TimeConverter.digitToBinary(8)
         ]
-        return SimpleEntry(date: Date(), binaryLayers: layers)
+        // **MODIFIED: Pass style to entry**
+        return SimpleEntry(date: Date(), binaryLayers: layers, style: getStyle())
     }
 
-    /// Provides the current state of the widget for the gallery.
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
         let layers = TimeConverter.getTimeAsBinaryLayers(from: Date())
-        let entry = SimpleEntry(date: Date(), binaryLayers: layers)
+        // **MODIFIED: Pass style to entry**
+        let entry = SimpleEntry(date: Date(), binaryLayers: layers, style: getStyle())
         completion(entry)
     }
 
-    /// Provides the timeline (past, present, future) for the widget.
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
         
         let currentDate = Date()
-        
         guard let nextUpdateDate = Calendar.current.date(
             byAdding: .minute,
             value: 1,
@@ -43,8 +45,12 @@ struct Provider: TimelineProvider {
             return
         }
         
+        // **NEW: Load the style for the timeline**
+        let style = getStyle()
         let layers = TimeConverter.getTimeAsBinaryLayers(from: currentDate)
-        let entry = SimpleEntry(date: currentDate, binaryLayers: layers)
+        
+        // **MODIFIED: Pass style to entry**
+        let entry = SimpleEntry(date: currentDate, binaryLayers: layers, style: style)
         
         let timeline = Timeline(entries: [entry], policy: .after(nextUpdateDate))
         completion(timeline)
@@ -54,20 +60,13 @@ struct Provider: TimelineProvider {
 // --- 2. The Data Model (Timeline Entry) ---
 struct SimpleEntry: TimelineEntry {
     let date: Date
-    let binaryLayers: [[Int]] // Our 4x4 array of binary data
+    let binaryLayers: [[Int]]
+    let style: WidgetStyle // **NEW: Style is now part of the entry**
     
-    /// **NEW: Accessibility helper**
-    /// Provides a human-readable string for VoiceOver.
     var accessibilityTimeString: String {
-        let formatter = DateFormatter()
-        formatter.timeStyle = .short // e.g., "10:45 AM"
-        
-        // This format is clearer for VoiceOver
         let components = Calendar.current.dateComponents([.hour, .minute], from: date)
         let hour = components.hour ?? 0
         let minute = components.minute ?? 0
-        
-        // Reads as "Time, 10 45"
         return "Time, \(hour) \(String(format: "%02d", minute))"
     }
 }
@@ -76,42 +75,32 @@ struct SimpleEntry: TimelineEntry {
 struct TimeWidgetEntryView : View {
     var entry: Provider.Entry
     
-    /// **NEW: The single source of truth for styling.**
-    let style = WidgetStyle.default
+    // **MODIFIED: The style now comes from the entry**
+    private var style: WidgetStyle { entry.style }
 
     var body: some View {
-        // A VStack (Vertical Stack) to stack the 4 lines
-        VStack(spacing: style.verticalSpacing) { // <-- MODIFIED
-            
-            // Loop over the 4 layers of data
+        VStack(spacing: style.verticalSpacing) {
             ForEach(0..<entry.binaryLayers.count, id: \.self) { index in
                 let digits = entry.binaryLayers[index]
-                let color = style.lineColors[index % style.lineColors.count] // <-- MODIFIED
+                let color = style.lineColors[index % style.lineColors.count].color
                 
-                // Draw the line shape
                 BinaryLineShape(
                     digits: digits,
-                    amplitudePercent: style.lineAmplitudePercent // <-- MODIFIED
+                    amplitudePercent: style.lineAmplitudePercent
                 )
-                    // We must "stroke" the path to make the line visible
-                    .stroke(color, lineWidth: style.lineWidth) // <-- MODIFIED
-                    .overlay(
-                        // Add the small circles ("markers")
-                        BinaryMarkerShape(
-                            digits: digits,
-                            markerSize: style.markerSize, // <-- MODIFIED
-                            amplitudePercent: style.lineAmplitudePercent // <-- MODIFIED
-                        )
-                            .fill(color)
+                .stroke(color, lineWidth: style.lineWidth)
+                .overlay(
+                    BinaryMarkerShape(
+                        digits: digits,
+                        markerSize: style.markerSize,
+                        amplitudePercent: style.lineAmplitudePercent
                     )
+                    .fill(color)
+                )
             }
         }
-        .padding(style.widgetPadding) // <-- MODIFIED
-        .containerBackground(style.backgroundColor, for: .widget) // <-- MODIFIED
-        
-        // --- **NEW: Accessibility** ---
-        // This treats the whole widget as one element
-        // and gives it a useful VoiceOver label.
+        .padding(style.widgetPadding)
+        .containerBackground(style.backgroundColor.color, for: .widget)
         .accessibilityElement()
         .accessibilityLabel(entry.accessibilityTimeString)
     }
@@ -131,20 +120,17 @@ struct TimeWidget: Widget {
     }
 }
 
-// --- 5. (Bonus) A Shape for the Markers ---
-// **DELETED**: This struct has been moved to its own file: `BinaryMarkerShape.swift`
-
-
-// --- 6. (Bonus) A Preview ---
+// --- 5. (Bonus) A Preview ---
 struct TimeWidget_Previews: PreviewProvider {
     static var previews: some View {
+        let style = StyleManager.loadStyle()
         let layers = [
-            TimeConverter.digitToBinary(1), // 1
-            TimeConverter.digitToBinary(8), // 8
-            TimeConverter.digitToBinary(5), // 5
-            TimeConverter.digitToBinary(2)  // 2
+            TimeConverter.digitToBinary(1),
+            TimeConverter.digitToBinary(8),
+            TimeConverter.digitToBinary(5),
+            TimeConverter.digitToBinary(2)
         ]
-        let entry = SimpleEntry(date: Date(), binaryLayers: layers)
+        let entry = SimpleEntry(date: Date(), binaryLayers: layers, style: style)
         
         TimeWidgetEntryView(entry: entry)
             .previewContext(WidgetPreviewContext(family: .systemSmall))
