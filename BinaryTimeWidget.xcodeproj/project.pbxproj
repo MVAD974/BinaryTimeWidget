@@ -71,11 +71,11 @@
 		490C447B2EBA145200B75024 /* Exceptions for "TimeWidget" folder in "BinaryTimeWidget" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				BinaryDotsView.swift,
 				BinaryLineShape.swift,
 				BinaryMarkerShape.swift,
 				BinaryTimeWidgetStyle.swift,
 				TimeConverter.swift,
-				TimeWidget.swift,
 			);
 			target = 490C44252EBA02EB00B75024 /* BinaryTimeWidget */;
 		};
