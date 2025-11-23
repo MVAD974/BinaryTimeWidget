@@ -57,4 +57,19 @@ struct TimeConverter {
         
         return binaryLayers
     }
+
+    /// 3. Extract date (day & month) into four binary layers (DDMM format: D1, D2, M1, M2)
+    static func getDateAsBinaryLayers(from date: Date) -> [[Int]] {
+        let calendar = Calendar.current
+        let day = calendar.component(.day, from: date)      // 1-31
+        let month = calendar.component(.month, from: date)  // 1-12
+
+        let dayDigit1 = day / 10
+        let dayDigit2 = day % 10
+        let monthDigit1 = month / 10
+        let monthDigit2 = month % 10
+
+        let digits = [dayDigit1, dayDigit2, monthDigit1, monthDigit2]
+        return digits.map { digitToBinary($0) }
+    }
 }

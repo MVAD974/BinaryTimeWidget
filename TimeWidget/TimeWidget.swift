@@ -10,91 +10,115 @@
 import WidgetKit
 import SwiftUI
 
-// --- 1. The Timeline Provider ---
+// MARK: - Timeline Provider
 struct Provider: TimelineProvider {
-    
     private func getStyle(for context: Context) -> WidgetStyle {
-        return StyleManager.loadStyle(for: context.family)
+        StyleManager.loadStyle(for: context.family)
     }
-    
+
     func placeholder(in context: Context) -> SimpleEntry {
-        let layers = [
-            TimeConverter.digitToBinary(1), // 1
-            TimeConverter.digitToBinary(0), // 0
-            TimeConverter.digitToBinary(0), // 0
-            TimeConverter.digitToBinary(8)  // 8
-        ]
-        return SimpleEntry(date: Date(), binaryLayers: layers, style: getStyle(for: context))
+        let now = Date()
+        return SimpleEntry(
+            date: now,
+            timeBinaryLayers: TimeConverter.getTimeAsBinaryLayers(from: now),
+            dateBinaryLayers: TimeConverter.getDateAsBinaryLayers(from: now),
+            style: getStyle(for: context)
+        )
     }
 
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let layers = TimeConverter.getTimeAsBinaryLayers(from: Date())
-        let entry = SimpleEntry(date: Date(), binaryLayers: layers, style: getStyle(for: context))
+        let now = Date()
+        let entry = SimpleEntry(
+            date: now,
+            timeBinaryLayers: TimeConverter.getTimeAsBinaryLayers(from: now),
+            dateBinaryLayers: TimeConverter.getDateAsBinaryLayers(from: now),
+            style: getStyle(for: context)
+        )
         completion(entry)
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-        
         let currentDate = Date()
-        guard let nextUpdateDate = Calendar.current.date(
-            byAdding: .minute,
-            @ViewBuilder
-            private var widgetBody: some View {
-                VStack(spacing: style.verticalSpacing) {
-                    ForEach(0..<entry.binaryLayers.count, id: \.self) { index in
-                        let digits = entry.binaryLayers[index]
-                        let color = style.lineColors[index % style.lineColors.count].color
-                
-                        BinaryLineShape(
-                            digits: digits,
-                            amplitudePercent: style.lineAmplitudePercent,
-                            horizontalPaddingPercent: style.horizontalPaddingPercent
-                        )
-                        .stroke(color, lineWidth: style.lineWidth)
-                        .overlay(
-                            BinaryMarkerShape(
-                                digits: digits,
-                                markerSize: style.markerSize,
-                                amplitudePercent: style.lineAmplitudePercent,
-                                horizontalPaddingPercent: style.horizontalPaddingPercent,
-                                markerShape: style.markerShape
-                            )
-                            .fill(color)
-                        )
-                    }
-                }
-                .padding(style.widgetPadding)
-            }
-                                    markerShape: style.markerShape
-                                )
-                                .fill(color)
-                            )
-                        }
-                    }
-                    .padding(style.widgetPadding)
-                ForEach(0..<entry.binaryLayers.count, id: \.self) { index in
-                    let digits = entry.binaryLayers[index]
-                    let color = style.lineColors[index % style.lineColors.count].color
-                    
-                    BinaryLineShape(
-                        digits: digits,
-                        amplitudePercent: style.lineAmplitudePercent,
-                        horizontalPaddingPercent: style.horizontalPaddingPercent
-                    )
-                    .stroke(color, lineWidth: style.lineWidth)
-                    .overlay(
-                        BinaryMarkerShape(
-                            digits: digits,
-                            markerSize: style.markerSize,
-                            amplitudePercent: style.lineAmplitudePercent,
-                            horizontalPaddingPercent: style.horizontalPaddingPercent,
-                            markerShape: style.markerShape // <-- ** ADD THIS LINE **
-                        )
-                        .fill(color)
-                    )
-                }
+        let nextUpdateDate = Calendar.current.date(byAdding: .minute, value: 1, to: currentDate) ?? currentDate.addingTimeInterval(60)
+        let style = getStyle(for: context)
+        let entry = SimpleEntry(
+            date: currentDate,
+            timeBinaryLayers: TimeConverter.getTimeAsBinaryLayers(from: currentDate),
+            dateBinaryLayers: TimeConverter.getDateAsBinaryLayers(from: currentDate),
+            style: style
+        )
+        completion(Timeline(entries: [entry], policy: .after(nextUpdateDate)))
+    }
+}
+
+// MARK: - Entry Model
+struct SimpleEntry: TimelineEntry {
+    let date: Date
+    let timeBinaryLayers: [[Int]]
+    let dateBinaryLayers: [[Int]]
+    let style: WidgetStyle
+
+    var accessibilityLabel: String {
+        let comps = Calendar.current.dateComponents([.hour, .minute, .day, .month], from: date)
+        let hour = comps.hour ?? 0
+        let minute = comps.minute ?? 0
+        let day = comps.day ?? 0
+        let month = comps.month ?? 0
+        return "Time \(hour):\(String(format: "%02d", minute)), Date \(day)/\(month)"
+    }
+}
+
+// MARK: - Entry View
+struct TimeWidgetEntryView: View {
+    var entry: Provider.Entry
+    private var style: WidgetStyle { entry.style }
+    @Environment(\.widgetFamily) private var family
+
+    var body: some View {
+        content
+            .containerBackground(style.backgroundColor.color, for: .widget)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(entry.accessibilityLabel)
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        switch family {
+        case .systemMedium:
+            HStack(spacing: style.widgetPadding) {
+                binaryColumn(entry.timeBinaryLayers)
+                Divider().overlay(style.lineColors.first?.color ?? .white)
+                binaryColumn(entry.dateBinaryLayers)
             }
             .padding(style.widgetPadding)
+        default:
+            binaryColumn(entry.timeBinaryLayers)
+                .padding(style.widgetPadding)
+        }
+    }
+
+    private func binaryColumn(_ layers: [[Int]]) -> some View {
+        VStack(spacing: style.verticalSpacing) {
+            ForEach(Array(layers.enumerated()), id: \.offset) { (index, digits) in
+                let color = style.lineColors[index % style.lineColors.count].color
+                BinaryLineShape(
+                    digits: digits,
+                    amplitudePercent: style.lineAmplitudePercent,
+                    horizontalPaddingPercent: style.horizontalPaddingPercent
+                )
+                .stroke(color, lineWidth: style.lineWidth)
+                .overlay(
+                    BinaryMarkerShape(
+                        digits: digits,
+                        markerSize: style.markerSize,
+                        amplitudePercent: style.lineAmplitudePercent,
+                        horizontalPaddingPercent: style.horizontalPaddingPercent,
+                        markerShape: style.markerShape
+                    )
+                    .fill(color)
+                )
+            }
+        }
     }
 }
 
@@ -103,12 +127,11 @@ struct TimeWidget: Widget {
     let kind: String = "TimeWidget"
 
     var body: some WidgetConfiguration {
-        // This is now simple, with no #if checks.
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
             TimeWidgetEntryView(entry: entry)
         }
         .configurationDisplayName("Binary Time")
-        .description("Displays the time as a layered binary plot.")
+        .description("Time and (medium) date in binary line form.")
         .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
     }
 }
@@ -121,20 +144,30 @@ struct TimeWidget: Widget {
 #if DEBUG
 struct TimeWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let style = StyleManager.loadStyle(for: .systemSmall)
-        let layers = [
-            TimeConverter.digitToBinary(1), // 1
-            TimeConverter.digitToBinary(8), // 8
-            TimeConverter.digitToBinary(5), // 5
-            TimeConverter.digitToBinary(2)  // 2
-        ]
-        let entry = SimpleEntry(date: Date(), binaryLayers: layers, style: style)
-        
-        TimeWidgetEntryView(entry: entry)
-            .previewContext(WidgetPreviewContext(family: .systemSmall))
-            .containerBackground(for: .widget) {
-                style.backgroundColor.color
-            }
+        Group {
+            let smallStyle = StyleManager.loadStyle(for: .systemSmall)
+            let now = Date()
+            let smallEntry = SimpleEntry(
+                date: now,
+                timeBinaryLayers: TimeConverter.getTimeAsBinaryLayers(from: now),
+                dateBinaryLayers: TimeConverter.getDateAsBinaryLayers(from: now),
+                style: smallStyle
+            )
+            TimeWidgetEntryView(entry: smallEntry)
+                .previewContext(WidgetPreviewContext(family: .systemSmall))
+                .containerBackground(for: .widget) { smallStyle.backgroundColor.color }
+
+            let mediumStyle = StyleManager.loadStyle(for: .systemMedium)
+            let mediumEntry = SimpleEntry(
+                date: now,
+                timeBinaryLayers: TimeConverter.getTimeAsBinaryLayers(from: now),
+                dateBinaryLayers: TimeConverter.getDateAsBinaryLayers(from: now),
+                style: mediumStyle
+            )
+            TimeWidgetEntryView(entry: mediumEntry)
+                .previewContext(WidgetPreviewContext(family: .systemMedium))
+                .containerBackground(for: .widget) { mediumStyle.backgroundColor.color }
+        }
     }
 }
 #endif
