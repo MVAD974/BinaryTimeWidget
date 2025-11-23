@@ -93,43 +93,31 @@ struct ContentView: View {
                 
                 // --- 6. Style-Specific Settings ---
                 // This panel is now dynamic based on your selection
-                switch style.representation {
-                case .binaryLineGraph:
-                    Section("Line Graph Settings") {
-                        SliderView(
-                            label: "Line Amplitude",
-                            value: $style.lineAmplitudePercent,
-                            range: 0.1...1.0,
-                            specifier: "%.2f"
-                        )
-                        SliderView(
-                            label: "Horiz. Padding",
-                            value: $style.horizontalPaddingPercent,
-                            range: 0.0...0.4,
-                            specifier: "%.2f"
-                        )
-                        SliderView(
-                            label: "Vertical Spacing",
-                            value: $style.verticalSpacing,
-                            range: 0...20,
-                            specifier: "%.1f"
-                        )
-                        Picker("Marker Shape", selection: $style.markerShape) {
-                            ForEach(MarkerShape.allCases) { shape in
-                                Text(shape.rawValue).tag(shape)
-                            }
+                Section("Line Graph Settings") {
+                    SliderView(
+                        label: "Line Amplitude",
+                        value: $style.lineAmplitudePercent,
+                        range: 0.1...1.0,
+                        specifier: "%.2f"
+                    )
+                    SliderView(
+                        label: "Horiz. Padding",
+                        value: $style.horizontalPaddingPercent,
+                        range: 0.0...0.4,
+                        specifier: "%.2f"
+                    )
+                    SliderView(
+                        label: "Vertical Spacing",
+                        value: $style.verticalSpacing,
+                        range: 0...20,
+                        specifier: "%.1f"
+                    )
+                    Picker("Marker Shape", selection: $style.markerShape) {
+                        ForEach(MarkerShape.allCases) { shape in
+                            Text(shape.rawValue).tag(shape)
                         }
-                        .pickerStyle(.segmented)
                     }
-                case .binaryDots:
-                    Section("Dots Settings") {
-                        SliderView(
-                            label: "Dot Spacing",
-                            value: $style.verticalSpacing,
-                            range: 0...20,
-                            specifier: "%.1f"
-                        )
-                    }
+                    .pickerStyle(.segmented)
                 }
             }
             .navigationTitle("Widget Style")
@@ -158,39 +146,32 @@ struct TimeVisualizationView: View {
     var body: some View {
         let binaryLayers = TimeConverter.getTimeAsBinaryLayers(from: date)
         
-        switch style.representation {
-        case .binaryLineGraph:
-            VStack(spacing: style.verticalSpacing) {
-                ForEach(0..<binaryLayers.count, id: \.self) { index in
-                    let digits = binaryLayers[index]
-                    let color = style.lineColors[index % style.lineColors.count].color
-                    
-                    BinaryLineShape(
+        VStack(spacing: style.verticalSpacing) {
+            ForEach(0..<binaryLayers.count, id: \.self) { index in
+                let digits = binaryLayers[index]
+                let color = style.lineColors[index % style.lineColors.count].color
+                
+                BinaryLineShape(
+                    digits: digits,
+                    amplitudePercent: style.lineAmplitudePercent,
+                    horizontalPaddingPercent: style.horizontalPaddingPercent
+                )
+                .stroke(color, lineWidth: style.lineWidth)
+                .overlay(
+                    BinaryMarkerShape(
                         digits: digits,
+                        markerSize: style.markerSize,
                         amplitudePercent: style.lineAmplitudePercent,
-                        horizontalPaddingPercent: style.horizontalPaddingPercent
+                        horizontalPaddingPercent: style.horizontalPaddingPercent,
+                        markerShape: style.markerShape
                     )
-                    .stroke(color, lineWidth: style.lineWidth)
-                    .overlay(
-                        // We must pass the new shape property
-                        BinaryMarkerShape(
-                            digits: digits,
-                            markerSize: style.markerSize,
-                            amplitudePercent: style.lineAmplitudePercent,
-                            horizontalPaddingPercent: style.horizontalPaddingPercent,
-                            markerShape: style.markerShape // <-- PASSING NEW PROP
-                        )
-                        .fill(color)
-                    )
-                }
+                    .fill(color)
+                )
             }
-            .padding(style.widgetPadding)
-            .background(style.backgroundColor.color)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-            
-        case .binaryDots:
-            BinaryDotsView(binaryLayers: binaryLayers, style: style)
         }
+        .padding(style.widgetPadding)
+        .background(style.backgroundColor.color)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 }
 

@@ -20,8 +20,6 @@ enum MarkerShape: String, Codable, CaseIterable, Identifiable {
 // An enum to define the different visual styles.
 enum RepresentationStyle: String, Codable, CaseIterable, Identifiable {
     case binaryLineGraph = "Line Graph"
-    case binaryDots = "Dots"
-    
     var id: String { self.rawValue }
 }
 
@@ -64,7 +62,7 @@ struct WidgetStyle: Codable, Equatable {
             verticalSpacing: 5.0,
             widgetPadding: 12.0,
             horizontalPaddingPercent: 0.1,
-            markerShape: .circle // <-- NEW
+            markerShape: .circle
         )
         
         // This switch is now exhaustive and safe.
