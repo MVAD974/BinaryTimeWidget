@@ -20,6 +20,7 @@ enum MarkerShape: String, Codable, CaseIterable, Identifiable {
 // An enum to define the different visual styles.
 enum RepresentationStyle: String, Codable, CaseIterable, Identifiable {
     case binaryLineGraph = "Line Graph"
+    case artisticBars = "Artistic Bars"
     var id: String { self.rawValue }
 }
 
@@ -41,13 +42,20 @@ struct WidgetStyle: Codable, Equatable {
     var horizontalPaddingPercent: CGFloat
     var markerShape: MarkerShape // <-- NEW (Request 1)
     
+    // Artistic Bars Properties (only meaningful when representation == .artisticBars)
+    var barMaxHeightPercent: CGFloat?    // 0.0 - 1.0 relative to available height (height for bit=1)
+    var barMinHeightPercent: CGFloat?    // 0.0 - 1.0 (height for bit=0)
+    var barCornerRadius: CGFloat?        // Corner radius of each bar
+    var barSpacing: CGFloat?             // Spacing between bars within a digit column
+    
     
     // MARK: - Default Style
     
     /// Provides a default style for a given widget family.
     static func defaultStyle(for family: WidgetFamily) -> WidgetStyle {
         
-        let defaultStyle = WidgetStyle(
+        // Base defaults for line graph
+        var style = WidgetStyle(
             backgroundColor: CodableColor(color: .black),
             lineColors: [
                 CodableColor(color: .blue),
@@ -62,18 +70,30 @@ struct WidgetStyle: Codable, Equatable {
             verticalSpacing: 5.0,
             widgetPadding: 12.0,
             horizontalPaddingPercent: 0.1,
-            markerShape: .circle
+            markerShape: .circle,
+            barMaxHeightPercent: nil,
+            barMinHeightPercent: nil,
+            barCornerRadius: nil,
+            barSpacing: nil
         )
         
-        // This switch is now exhaustive and safe.
+        // Family-specific adjustments (can tweak defaults)
         switch family {
-        case .systemSmall, .systemMedium, .systemLarge, .systemExtraLarge:
-            return defaultStyle
+        case .systemSmall:
+            break
+        case .systemMedium:
+            style.verticalSpacing = 6
+        case .systemLarge, .systemExtraLarge:
+            style.verticalSpacing = 8
         case .accessoryCircular, .accessoryRectangular, .accessoryInline:
-            return defaultStyle
+            break
         @unknown default:
-            return defaultStyle
+            break
         }
+        return style
+        
+        // This switch is now exhaustive and safe.
+        // NOTE: ArtisticBars defaults are provided lazily when representation changes.
     }
 }
 

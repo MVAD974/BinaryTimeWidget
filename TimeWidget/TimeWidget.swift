@@ -83,17 +83,22 @@ struct TimeWidgetEntryView: View {
 
     @ViewBuilder
     private var content: some View {
-        switch family {
-        case .systemMedium:
-            HStack(spacing: style.widgetPadding) {
-                binaryColumn(entry.timeBinaryLayers)
-                Divider().overlay(style.lineColors.first?.color ?? .white)
-                binaryColumn(entry.dateBinaryLayers)
-            }
-            .padding(style.widgetPadding)
-        default:
-            binaryColumn(entry.timeBinaryLayers)
+        switch style.representation {
+        case .binaryLineGraph:
+            switch family {
+            case .systemMedium:
+                HStack(spacing: style.widgetPadding) {
+                    binaryColumn(entry.timeBinaryLayers)
+                    Divider().overlay(style.lineColors.first?.color ?? .white)
+                    binaryColumn(entry.dateBinaryLayers)
+                }
                 .padding(style.widgetPadding)
+            default:
+                binaryColumn(entry.timeBinaryLayers)
+                    .padding(style.widgetPadding)
+            }
+        case .artisticBars:
+            artisticBarsContent
         }
     }
 
@@ -117,6 +122,60 @@ struct TimeWidgetEntryView: View {
                     )
                     .fill(color)
                 )
+            }
+        }
+    }
+}
+
+// MARK: - Artistic Bars Rendering
+extension TimeWidgetEntryView {
+    @ViewBuilder
+    private var artisticBarsContent: some View {
+        let timeLayers = entry.timeBinaryLayers
+        let dateLayers = entry.dateBinaryLayers
+        // Provide default artistic values if nil
+        let maxH = style.barMaxHeightPercent ?? 0.9
+        let minH = style.barMinHeightPercent ?? 0.25
+        let corner = style.barCornerRadius ?? 4
+        let spacing = style.barSpacing ?? 3
+
+        switch family {
+        case .systemMedium:
+            HStack(spacing: style.widgetPadding) {
+                artisticColumn(timeLayers, maxHeight: maxH, minHeight: minH, cornerRadius: corner, spacing: spacing)
+                Divider().overlay(style.lineColors.first?.color ?? .white)
+                artisticColumn(dateLayers, maxHeight: maxH, minHeight: minH, cornerRadius: corner, spacing: spacing)
+            }
+            .padding(style.widgetPadding)
+        default:
+            artisticColumn(timeLayers, maxHeight: maxH, minHeight: minH, cornerRadius: corner, spacing: spacing)
+                .padding(style.widgetPadding)
+        }
+    }
+
+    private func artisticColumn(_ layers: [[Int]], maxHeight: CGFloat, minHeight: CGFloat, cornerRadius: CGFloat, spacing: CGFloat) -> some View {
+        VStack(spacing: style.verticalSpacing) {
+            ForEach(Array(layers.enumerated()), id: \.offset) { (index, digits) in
+                let color = style.lineColors[index % style.lineColors.count].color
+                GeometryReader { geo in
+                    // For four bits -> draw 4 vertical bars side by side
+                    let totalWidth = geo.size.width
+                    let barCount = digits.count
+                    let barSpacing = spacing
+                    let availableWidth = totalWidth - (CGFloat(barCount - 1) * barSpacing)
+                    let barWidth = availableWidth / CGFloat(barCount)
+                    HStack(alignment: .center, spacing: barSpacing) {
+                        ForEach(0..<barCount, id: \.self) { i in
+                            let bit = digits[i]
+                            let heightPercent = bit == 1 ? maxHeight : minHeight
+                            RoundedRectangle(cornerRadius: cornerRadius)
+                                .fill(color)
+                                .frame(width: barWidth, height: geo.size.height * heightPercent, alignment: .bottom)
+                                .frame(maxHeight: .infinity, alignment: .bottom)
+                        }
+                    }
+                }
+                .frame(height: style.markerSize * 4 + style.lineWidth * 2) // approximate row height
             }
         }
     }
